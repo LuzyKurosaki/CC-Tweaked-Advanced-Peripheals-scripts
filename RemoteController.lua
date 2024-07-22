@@ -1,8 +1,9 @@
 
-local port = 100001
-local receiver = 100002
-local playerPeripheal = peripheral.find("")
-local modem = peripheral.find("modem").open(port)
+local port = 10001
+local receiver = 10002
+local playerPeripheal = peripheral.find("playerDetector")
+local modem = peripheral.find("modem")
+modem.open(port)
 
 
 local function detectPlayer(player)
@@ -20,6 +21,7 @@ local function transportPlayer(player,target)
 end
 
 
+write("booting")
 
 while true do
     local event, side, channel, replyChannel, message, distance
@@ -29,12 +31,14 @@ while true do
     
     if message["command"] == "detectPlayer" then
         detectPlayer(message["player"])
+        print(message)
     elseif message["command"] == "getPlayers" then
-        players()
+        getPlayers()
     elseif message["command"] == "transportPlayer" then
         local player = detectPlayer(message["player"]) 
         local target = detectPlayer(message["target"])
         transportPlayer(player,target)
     end
     sleep(1)
+    write("running\n")
 end

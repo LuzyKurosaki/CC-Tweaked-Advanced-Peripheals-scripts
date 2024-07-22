@@ -1,7 +1,7 @@
-local port = 100002
-local receiver = 100001
-local playerPeripheal = peripheral.find("")
-local modem = peripheral.find("modem").open(port)
+local port = 10002
+local receiver = 10001
+local modem = peripheral.find("modem")
+modem.open(port)
 
 local function getPlayerModel()
     return {
@@ -19,7 +19,7 @@ local function trackPlayer()
     local player = SelectPlayer(GetPlayers())
     while true do
         player = DetectPlayer(player)
-        -- print cords
+        write("x:"..player["pos"]["x"].." y:"..player["pos"]["y"].." z:"..player["pos"]["z"].."\n")
         sleep(1)
     end
 end
@@ -32,7 +32,7 @@ function DetectPlayer(player)
     local event, side, channel, replyChannel, message, distance
     repeat
         event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
-    until channel == 43
+    until channel == port
     return message
 end
 
@@ -43,17 +43,18 @@ function GetPlayers()
     local event, side, channel, replyChannel, message, distance
     repeat
         event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
-    until channel == 43
+    until channel == port
+    return message
 end
 
 function SelectPlayer(players)
     for k, v in pairs(players) do
         print(k .. ": " .. v)
     end
-    write("Please select Player>")
-    local player = read()
-    player = getPlayerModel()
-    player["name"] = players[player]
+    write("\nPlease select Player>")
+    local io = read()
+    local player = getPlayerModel()
+    player["name"] = players[tonumber(io)]
     return player
 end
 
@@ -66,17 +67,16 @@ local function transportPlayer(player, target)
     })
 end
     
-write("<<Remote Drone Controll>>")
-write("Available Commands: 0:TrackPlayer | 1:TransportPlayer")
-write("Command>")
+write("Remote Drone Controll>>")
+write("Available Commands:\n0:TrackPlayer | 1:TransportPlayer \n")
+write("Command>\n")
 local command = read()
 
 if command == "trackPlayer" or command == "0"  then
-    write("<< Player Tracker >>")
-    
+    write("Player Tracker>>\n")
     trackPlayer()
 elseif command == "transportPlayer" or command == "1"   then
-    write("<< Player Transporter Started >>")
+    write("Player Transporter Started>>")
     write("< Please Select Player To Transport >")
     local players = GetPlayers()
     local player = SelectPlayer(players)
